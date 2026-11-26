@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#ffffff">
 <title>Колесо емоцій</title>
+<link rel="alternate" hreflang="uk" href="./">
+<link rel="alternate" hreflang="en" href="./en/">
 <style>
 :root {
   color-scheme: light;
@@ -239,13 +241,18 @@ select {
 @media (prefers-reduced-motion: reduce) {
   .wedge path { transition: none; }
 }
+
 #connection-status { margin: 16px auto 0; width: min(calc(100% - 32px), 1176px); color: var(--muted); }
+.header-inner { position: relative; }
+.language-link { position: absolute; inset-inline-end: var(--inset); top: 29px; color: var(--ink); text-underline-offset: .22em; }
+@media (max-width: 760px) { .language-link { top: 22px; inset-inline-end: 4px; } }
 </style>
 </head>
 <body>
 <header>
   <div class="header-inner">
     <div class="brand"><span class="mark" aria-hidden="true"></span>Колесо емоцій</div>
+    <a class="language-link" href="./en/" hreflang="en" lang="en" aria-label="English">ENG</a>
     <nav class="switch" aria-label="Режим">
       <button id="pick-mode" aria-pressed="true">Вибір емоцій</button>
       <button id="stats-mode" aria-pressed="false">Статистика</button>
