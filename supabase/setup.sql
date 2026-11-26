@@ -144,6 +144,10 @@ create table emotion_wheel.counts (
 );
 create table emotion_wheel.submissions (id uuid primary key);
 
+alter table emotion_wheel.emotions enable row level security;
+alter table emotion_wheel.counts enable row level security;
+alter table emotion_wheel.submissions enable row level security;
+
 create function public.record_emotion_vote(choices text[], submission_id uuid)
 returns void
 language plpgsql
@@ -186,7 +190,7 @@ language sql
 security definer
 set search_path = ''
 as $$
-  delete from emotion_wheel.counts;
+  delete from emotion_wheel.counts where total > 0;
 $$;
 
 revoke all on function public.record_emotion_vote(text[], uuid), public.get_emotion_stats(),
