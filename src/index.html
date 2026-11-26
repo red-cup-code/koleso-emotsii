@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>Колесо емоцій</title>
+<style>
+:root {
+  color-scheme: light;
+  --canvas: #f4f5f6;
+  --paper: #fff;
+  --ink: #222324;
+  --muted: #575963;
+  --graphite: #2f353b;
+  --line: #e5e6e8;
+  --pink: #ffc5dc;
+  --focus: #a92e62;
+  --inset: clamp(24px, 3.15vw, 42px);
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font: 1rem/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+button, select { font: inherit; color: inherit; }
+button, summary { cursor: pointer; }
+button:focus-visible, select:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+header { background: var(--paper); }
+.header-inner, main {
+  width: min(calc(100% - 48px), 1260px);
+  margin-inline: auto;
+}
+.header-inner { padding-inline: var(--inset); }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  padding-block: 14px 18px;
+  font-size: 1.55rem;
+  line-height: 1.2;
+  font-weight: 730;
+}
+.mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 56px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--pink);
+}
+.mark::before {
+  content: "";
+  width: 29px;
+  height: 29px;
+  border: 2px solid var(--graphite);
+  border-radius: 50%;
+  background: repeating-conic-gradient(from -1.5deg, var(--graphite) 0deg 4deg, transparent 4deg 45deg);
+}
+.switch {
+  display: flex;
+  gap: 28px;
+  min-height: 45px;
+}
+.switch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  padding: 8px 0 11px;
+  background: transparent;
+}
+.switch button::before {
+  content: "";
+  width: 13px;
+  height: 13px;
+  flex: none;
+  background: var(--graphite);
+  border-radius: 2px;
+}
+.switch button[aria-pressed=true] {
+  border-bottom-color: var(--pink);
+  font-weight: 650;
+}
+.switch button[aria-pressed=true]::before { background: var(--pink); }
+.switch button:hover { text-decoration: underline; text-underline-offset: .2em; }
+
+main {
+  display: grid;
+  grid-template-columns: minmax(0, 2.28fr) minmax(270px, 1fr);
+  align-items: start;
+  gap: 20px;
+  padding-block: 20px 40px;
+}
+.wheel-panel, .panel { background: var(--paper); }
+.wheel-panel { min-width: 0; padding: var(--inset); }
+h1, h2, p { margin: 0; }
+h1 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.14;
+  font-weight: 430;
+  letter-spacing: -.025em;
+}
+.wheel-intro p { margin-top: 12px; color: var(--muted); }
+.wheel-wrap { display: grid; place-items: center; margin-top: clamp(20px, 2.5vw, 34px); }
+.wheel { display: block; width: min(100%, 660px); height: auto; overflow: visible; }
+.wedge { cursor: pointer; outline: none; }
+.wedge path {
+  stroke: #fff;
+  stroke-opacity: .6;
+  stroke-width: 1.15;
+  transition: filter .15s, fill-opacity .2s;
+}
+.wedge text {
+  pointer-events: none;
+  fill: #fff;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: #22232470;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+.wheel[data-mode=pick] .wedge:hover path { filter: brightness(.89); }
+.wedge.selected path { filter: brightness(.86); stroke: #24262a; stroke-opacity: 1; stroke-width: 3; }
+.wedge:focus-visible path { stroke: #171717; stroke-opacity: 1; stroke-width: 3.8; }
+.wheel[data-mode=stats] .wedge, .wheel[aria-busy=true] .wedge { cursor: default; }
+.wheel[data-mode=stats] .wedge text { fill: #18191b; stroke: #ffffffa8; }
+
+.rail { display: grid; gap: 20px; min-width: 0; }
+.panel { padding: var(--inset); }
+h2 { font-size: 1.13rem; font-weight: 550; line-height: 1.3; }
+.panel h2 span { background: var(--canvas); box-decoration-break: clone; }
+#selection-title, .detail { display: block; color: var(--muted); font-size: .9375rem; }
+#selection-title { margin-top: 13px; }
+.selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  max-height: 130px;
+  overflow: auto;
+  padding: 0;
+  margin: 10px 0 0;
+}
+.selection li { max-width: 100%; }
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: #ffe7f0;
+  border: 1px solid #f1bfd3;
+  padding: 4px 8px;
+  font-size: .875rem;
+  text-align: left;
+}
+.chip:not(:disabled):hover { border-color: var(--focus); }
+.chip span { color: var(--muted); }
+.vote, .action {
+  border: 1px solid var(--graphite);
+  padding: 10px 14px;
+  background: var(--graphite);
+  color: #fff;
+}
+.vote { width: 100%; margin-top: 15px; }
+.vote:not(:disabled):hover, .action:hover { background: #15181b; }
+.vote:disabled { cursor: default; background: var(--canvas); border-color: var(--line); color: var(--muted); }
+.vote-status { font-size: .9375rem; color: var(--muted); }
+.vote-status:not(:empty) { margin-top: 10px; }
+.list-picker { margin-top: 18px; font-size: .9375rem; }
+.list-picker summary { text-decoration: underline; text-underline-offset: .18em; }
+select {
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--canvas);
+  padding: 9px;
+}
+.choices { display: grid; gap: 10px; margin-top: 16px; }
+.legend { display: flex; align-items: center; gap: 9px; font-size: .9375rem; }
+.dot { display: inline-block; width: 11px; height: 11px; flex: none; border-radius: 1px; }
+.total { display: block; font-size: 2.6rem; line-height: 1.12; font-weight: 600; }
+.detail { margin-top: 5px; }
+#stats-status { color: var(--muted); font-size: .9375rem; margin-top: 17px; }
+.stats-list { display: grid; gap: 13px; max-height: 370px; overflow: auto; }
+.stats-list:not(:empty) { margin-top: 14px; }
+.stats-row { display: grid; grid-template-columns: 1fr auto; gap: 5px 8px; font-size: .9375rem; }
+.bar { grid-column: 1/-1; background: var(--canvas); height: 5px; overflow: hidden; }
+.bar i { display: block; height: 100%; }
+.stats-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
+.reset-button {
+  border: 1px solid #a03a53;
+  padding: 10px 14px;
+  background: transparent;
+  color: #932d49;
+}
+.reset-button:not(:disabled):hover { background: #fcebf1; }
+.reset-button:disabled { opacity: .6; cursor: default; }
+.reset-dialog {
+  width: min(calc(100% - 32px), 440px);
+  padding: 24px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+}
+.reset-dialog::backdrop { background: #22232480; }
+.reset-dialog p { margin-top: 10px; color: var(--muted); }
+.reset-code { display: block; margin-top: 14px; }
+.reset-code input { display: block; width: 100%; margin-top: 6px; padding: 8px; font: inherit; }
+.reset-dialog form { justify-content: flex-end; }
+#reset-status:not(:empty) { margin-top: 10px; font-size: .9375rem; }
+.error, #stats-status.error { color: #9b2744; }
+
+@media (max-width: 760px) {
+  :root { --inset: 20px; }
+  .header-inner, main { width: calc(100% - 32px); }
+  .header-inner { padding-inline: 4px; }
+  .brand { padding-block: 13px 10px; font-size: 1.3rem; gap: 12px; }
+  .mark { width: 42px; }
+  .mark::before { width: 22px; height: 22px; }
+  main { grid-template-columns: minmax(0, 1fr); gap: 16px; padding-top: 16px; }
+  .rail { gap: 16px; }
+  .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats-list { max-height: 250px; }
+}
+@media (max-width: 460px) {
+  .wheel-wrap { margin-inline: -12px; }
+  .switch { gap: 20px; }
+  .switch button { font-size: .9375rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wedge path { transition: none; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand"><span class="mark" aria-hidden="true"></span>Колесо емоцій</div>
+    <nav class="switch" aria-label="Режим">
+      <button id="pick-mode" aria-pressed="true">Вибір емоцій</button>
+      <button id="stats-mode" aria-pressed="false">Статистика</button>
+    </nav>
+  </div>
+</header>
+<main>
+  <section class="wheel-panel">
+    <div id="pick-intro" class="wheel-intro">
+      <h1>Що ти зараз відчуваєш?</h1>
+      <p>Обери одну або кілька емоцій на колесі й підтвердь вибір.</p>
+    </div>
+    <div id="stats-intro" class="wheel-intro" hidden>
+      <h1>Статистика емоцій</h1>
+      <p>Спільні результати всіх учасників.</p>
+    </div>
+    <div class="wheel-wrap">
+      <svg class="wheel" id="wheel" viewBox="0 0 800 800" role="group" aria-label="Інтерактивне колесо емоцій"></svg>
+    </div>
+  </section>
+
+  <section class="rail" id="pick" aria-label="Вибір емоцій">
+    <div class="panel">
+      <h2><span>Твій вибір</span></h2>
+      <span id="selection-title" aria-live="polite">Емоції ще не вибрано</span>
+      <ul class="selection" id="selection" aria-label="Вибрані емоції" hidden></ul>
+      <button class="vote" id="vote-button" disabled>Зарахувати голос</button>
+      <p class="vote-status" id="vote-status" role="status"></p>
+      <details class="list-picker">
+        <summary>Обрати зі списку</summary>
+        <select id="emotion-select" aria-label="Додати емоцію зі списку"><option value="">Додай емоцію</option></select>
+      </details>
+    </div>
+    <div class="panel">
+      <h2><span>Групи емоцій</span></h2>
+      <div class="choices" id="legend"></div>
+    </div>
+  </section>
+
+  <section class="rail" id="stats" aria-label="Результати голосування" hidden>
+    <div class="panel">
+      <span class="total" id="total">—</span>
+      <span class="detail">Голосів за окремі емоції</span>
+      <p id="stats-status" role="status"></p>
+      <div id="ranking" class="stats-list"></div>
+      <div class="stats-actions">
+        <button id="refresh" class="action">Оновити</button>
+        <button id="reset-stats" class="reset-button" data-reset-disabled hidden>Скинути статистику</button>
+      </div>
+      <p id="reset-status" role="status"></p>
+      <dialog id="reset-dialog" class="reset-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
+        <h2 id="reset-title">Скинути статистику?</h2>
+        <p id="reset-description">Усі накопичені голоси буде видалено без можливості відновлення.</p>
+        <label class="reset-code" data-reset-code hidden>
+          Код адміністратора
+          <input id="reset-code" type="password" autocomplete="off" maxlength="256">
+        </label>
+        <form method="dialog" class="stats-actions">
+          <button class="action" autofocus>Скасувати</button>
+          <button id="confirm-reset" class="reset-button" type="button">Скинути всі голоси</button>
+        </form>
+      </dialog>
+    </div>
+  </section>
+</main>
+<script src="/app.js" defer></script>
+</body>
+</html>

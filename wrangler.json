@@ -1,0 +1,20 @@
+{
+  "name": "koleso-emotsii",
+  "main": "dist/server/index.js",
+  "compatibility_date": "2026-11-26",
+  "workers_dev": true,
+  "build": {
+    "command": "node build.mjs"
+  },
+  "vars": {
+    "PUBLIC_STATS_RESET": "true"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "koleso-emotsii",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

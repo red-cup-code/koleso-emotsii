@@ -1,0 +1,4 @@
+CREATE TABLE vote_submissions (
+  id TEXT PRIMARY KEY NOT NULL,
+  recorded INTEGER NOT NULL DEFAULT 0
+);
