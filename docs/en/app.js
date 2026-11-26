@@ -66,7 +66,7 @@ function wedge(key, label, color, start, end, inner, outer) {
   const tooltip = svg('title');
   tooltip.textContent = label;
   group.append(tooltip, svg('path', { d: path, fill: color }));
-  const text = svg('text', { x, y, 'font-size': inner ? 13 : 16, 'text-anchor': 'middle',
+  const text = svg('text', { x, y, 'font-size': inner ? 15 : 18, 'text-anchor': 'middle',
     'dominant-baseline': 'central', transform: 'rotate(' + rotation + ' ' + x + ' ' + y + ')' });
   text.textContent = label;
   group.append(text);
@@ -312,5 +312,23 @@ select.onchange = () => {
   if (select.value && !selected.has(select.value)) toggleEmotion(select.value);
   select.value = '';
 };
+const wheelViewport = document.querySelector('#wheel-viewport');
+const wheelZoom = document.querySelector('#wheel-zoom');
+const wheelHelp = document.querySelector('#wheel-help');
+wheelZoom.onclick = () => {
+  const zoomed = wheelViewport.toggleAttribute('data-zoomed');
+  wheelZoom.textContent = zoomed ? 'Zoom out' : 'Zoom in';
+  wheelHelp.hidden = !zoomed;
+  if (zoomed) {
+    wheelViewport.tabIndex = 0;
+    wheelViewport.scrollLeft = (wheelViewport.scrollWidth - wheelViewport.clientWidth) / 2;
+    wheelViewport.scrollTop = (wheelViewport.scrollHeight - wheelViewport.clientHeight) / 2;
+  } else {
+    wheelViewport.removeAttribute('tabindex');
+    wheelViewport.scrollLeft = 0;
+    wheelViewport.scrollTop = 0;
+  }
+};
+
 voteButton.onclick = submitVote;
 renderSelection();

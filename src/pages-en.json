@@ -43,5 +43,9 @@
   "Статистику скинуто.": "Statistics have been reset.",
   "Не вдалося підтвердити скидання. Онови статистику, щоб перевірити результат.": "Could not confirm the reset. Refresh the statistics to check the result.",
   "Голосування буде доступне після підключення бази даних.": "Voting will be available once the database is connected.",
-  "Очікуємо підключення бази даних.": "Waiting for the database connection."
+  "Очікуємо підключення бази даних.": "Waiting for the database connection.",
+  "Збільшити колесо": "Zoom in",
+  "Зменшити колесо": "Zoom out",
+  "Перегляд колеса емоцій": "Emotion wheel viewport",
+  "Прокручуй колесо в різні боки, щоб прочитати назви.": "Scroll in any direction to read the labels."
 }

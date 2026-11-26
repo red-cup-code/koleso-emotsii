@@ -34,7 +34,7 @@ button:focus-visible, select:focus-visible, summary:focus-visible {
 }
 header { background: var(--paper); }
 .header-inner, main {
-  width: min(calc(100% - 48px), 1260px);
+  width: min(calc(100% - 40px), 1540px);
   margin-inline: auto;
 }
 .header-inner { padding-inline: var(--inset); }
@@ -95,13 +95,13 @@ header { background: var(--paper); }
 
 main {
   display: grid;
-  grid-template-columns: minmax(0, 2.28fr) minmax(270px, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 24%);
   align-items: start;
   gap: 20px;
   padding-block: 20px 40px;
 }
 .wheel-panel, .panel { background: var(--paper); }
-.wheel-panel { min-width: 0; padding: var(--inset); }
+.wheel-panel { min-width: 0; padding: clamp(18px, 2.6vw, 36px); }
 h1, h2, p { margin: 0; }
 h1 {
   font-size: clamp(1.8rem, 3vw, 2.6rem);
@@ -110,8 +110,26 @@ h1 {
   letter-spacing: -.025em;
 }
 .wheel-intro p { margin-top: 12px; color: var(--muted); }
-.wheel-wrap { display: grid; place-items: center; margin-top: clamp(20px, 2.5vw, 34px); }
-.wheel { display: block; width: min(100%, 660px); height: auto; overflow: visible; }
+.wheel-tools { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin-top: 15px; }
+.wheel-zoom {
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  background: var(--canvas);
+  font-size: .9375rem;
+}
+.wheel-zoom:hover { border-color: var(--graphite); }
+.wheel-help { font-size: .875rem; color: var(--muted); }
+.wheel-wrap { margin-top: clamp(12px, 1.8vw, 22px); }
+.wheel { display: block; width: min(100%, 940px); height: auto; margin-inline: auto; }
+.wheel-wrap[data-zoomed] {
+  max-height: 72vh;
+  max-height: 72dvh;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  border: 1px solid var(--line);
+}
+.wheel-wrap[data-zoomed] .wheel { width: max(100%, 1080px); }
+.wheel-wrap:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
 .wedge { cursor: pointer; outline: none; }
 .wedge path {
   stroke: #fff;
@@ -124,7 +142,7 @@ h1 {
   fill: #fff;
   font-weight: 600;
   paint-order: stroke;
-  stroke: #22232470;
+  stroke: #222324a0;
   stroke-width: 1.8;
   stroke-linejoin: round;
 }
@@ -261,7 +279,11 @@ select {
       <h1>Статистика емоцій</h1>
       <p>Спільні результати всіх учасників.</p>
     </div>
-    <div class="wheel-wrap">
+    <div class="wheel-tools">
+      <button class="wheel-zoom" id="wheel-zoom" type="button" aria-controls="wheel-viewport">Збільшити колесо</button>
+      <span class="wheel-help" id="wheel-help" hidden>Прокручуй колесо в різні боки, щоб прочитати назви.</span>
+    </div>
+    <div class="wheel-wrap" id="wheel-viewport" role="region" aria-label="Перегляд колеса емоцій">
       <svg class="wheel" id="wheel" viewBox="0 0 800 800" role="group" aria-label="Інтерактивне колесо емоцій"></svg>
     </div>
   </section>
